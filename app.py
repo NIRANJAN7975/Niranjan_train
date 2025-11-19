@@ -439,7 +439,7 @@ def send_otp(email):
 
 
     sender_email = "railconnect24.7@gmail.com"
-    sender_password = "odbw stpt fegm cbgv"
+    sender_password = "cxvq xiyp jxqj xzhi"
 
 
     # Create the email message
@@ -840,3 +840,4 @@ def App_review():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
