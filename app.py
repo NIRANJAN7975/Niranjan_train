@@ -444,22 +444,19 @@ def send_otp(email):
         message_body = f"Your OTP for RailConnect registration is: {otp}"
 
         sender_email = "railconnect24.7@gmail.com"
-        sender_password = "kbik vcem dmzc szre"  # Gmail App Password
+        sender_password = "xkxk uvbw nyfx yiyr"
 
-        # Email message setup
         msg = MIMEMultipart()
         msg["From"] = sender_email
         msg["To"] = email
         msg["Subject"] = "OTP for RailConnect Registration"
         msg.attach(MIMEText(message_body, "plain"))
 
-        # SMTP Server connection
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10)
         server.login(sender_email, sender_password)
         server.sendmail(sender_email, email, msg.as_string())
         server.quit()
 
-        # Save OTP in database
         otp_collection.insert_one({
             "email": email,
             "otp": otp,
@@ -467,7 +464,7 @@ def send_otp(email):
             "expires_at": datetime.now() + timedelta(minutes=5)
         })
 
-        return otp  # success
+        return otp
 
     except Exception as e:
         logging.error(f"OTP Sending Failed: {str(e)}")
@@ -540,7 +537,7 @@ def fsend_otp(email):
 
     # Email setup
     sender_email = "railconnect24.7@gmail.com"
-    sender_password = "kbik vcem dmzc szre"
+    sender_password = "xkxk uvbw nyfx yiyr"
     # Ensure this is a Google App password
 
     # Create the email message
@@ -843,6 +840,7 @@ def App_review():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
