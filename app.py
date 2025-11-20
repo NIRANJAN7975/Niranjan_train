@@ -407,9 +407,9 @@ def send_sos2():
     
     return jsonify({"status": "SOS sent with image!"})
 
-@app.route('/get_otp', methods=['GET', 'POST'])
+@app.route('/get_otp', methods=['POST'])
 def get_otp():
-    if request.method == 'POST':
+    try:
         username = request.form.get('username')
         mobile = request.form.get('mobile')
         email = request.form.get('email')
@@ -418,58 +418,60 @@ def get_otp():
         if not username or not email or not password:
             return jsonify({'success': False, 'message': 'All fields are required!'})
 
-        if users_collection.find_one({'email': email}):
+        # Check existing email
+        if users_collection.find_one({"email": email}):
             return jsonify({'success': False, 'message': 'Email already exists! Please log in.'})
 
+        # Remove existing OTP for this email
         otp_collection.delete_one({"email": email})
 
-        otp = send_otp(email)
-        if otp is None:
+        # Send OTP
+        otp_value = send_otp(email)
+
+        if otp_value is None:
             return jsonify({'success': False, 'message': 'Failed to send OTP. Please try again.'})
 
-        return jsonify({'success': True, 'message': 'OTP sent to your Email. Please check'})
+        return jsonify({'success': True, 'message': 'OTP sent to your email.'})
 
-    return jsonify({'success': False, 'message': 'Invalid request method'})
-
-
+    except Exception as e:
+        logging.error(f"Error in get_otp: {str(e)}")
+        return jsonify({'success': False, 'message': 'Server error occurred.'})
 
 
 def send_otp(email):
-    otp = random.randint(100000, 999999)  # Generate a 6-digit OTP
-    message = f"Your OTP for RailConnect registration is: {otp}"
-
-
-    sender_email = "railconnect24.7@gmail.com"
-    sender_password = "kbik vcem dmzc szre"
-
-
-    # Create the email message
-    msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = email
-    msg['Subject'] = "OTP for RailConnect Registration"
-    msg.attach(MIMEText(message, 'plain'))
-
     try:
-        # Send email using SMTP
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, sender_password)
-            server.sendmail(sender_email, email, msg.as_string())
+        otp = random.randint(100000, 999999)
+        message_body = f"Your OTP for RailConnect registration is: {otp}"
 
-        # Store OTP in MongoDB with an expiration time of 5 minutes
-        otp_data = {
+        sender_email = "railconnect24.7@gmail.com"
+        sender_password = "kbik vcem dmzc szre"  # Gmail App Password
+
+        # Email message setup
+        msg = MIMEMultipart()
+        msg["From"] = sender_email
+        msg["To"] = email
+        msg["Subject"] = "OTP for RailConnect Registration"
+        msg.attach(MIMEText(message_body, "plain"))
+
+        # SMTP Server connection
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, email, msg.as_string())
+        server.quit()
+
+        # Save OTP in database
+        otp_collection.insert_one({
             "email": email,
             "otp": otp,
             "created_at": datetime.now(),
             "expires_at": datetime.now() + timedelta(minutes=5)
-        }
-        otp_collection.insert_one(otp_data)
-        logging.info("OTP sent and saved successfully.")
-        return otp  # Return the OTP if successfully sent
+        })
 
-    except smtplib.SMTPException as e:
-        logging.error(f"Failed to send OTP: {e}")
-        return None  # Return None to indicate failure
+        return otp  # success
+
+    except Exception as e:
+        logging.error(f"OTP Sending Failed: {str(e)}")
+        return None
 
 
 # Route for user registration
@@ -841,6 +843,7 @@ def App_review():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
