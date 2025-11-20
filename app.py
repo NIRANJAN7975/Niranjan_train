@@ -439,7 +439,7 @@ def send_otp(email):
 
 
     sender_email = "railconnect24.7@gmail.com"
-    sender_password = "zpkv pnni oksk wwfp"
+    sender_password = "kbik vcem dmzc szre"
 
 
     # Create the email message
@@ -537,7 +537,7 @@ def fsend_otp(email):
 
     # Email setup
     sender_email = "railconnect24.7@gmail.com"
-    sender_password = "odbw stpt fegm cbgv"
+    sender_password = "kbik vcem dmzc szre"
     # Ensure this is a Google App password
 
     # Create the email message
@@ -840,5 +840,6 @@ def App_review():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
