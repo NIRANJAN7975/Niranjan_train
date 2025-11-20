@@ -437,7 +437,6 @@ def get_otp():
         logging.error(f"Error in get_otp: {str(e)}")
         return jsonify({'success': False, 'message': 'Server error occurred.'})
 
-
 def send_otp(email):
     try:
         otp = random.randint(100000, 999999)
@@ -843,6 +842,7 @@ def App_review():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
