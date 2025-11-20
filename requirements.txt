@@ -6,22 +6,13 @@ scipy
 pandas
 pymongo
 gunicorn
-
-# Audio processing
 librosa
 soundfile
 sounddevice
-
-# Machine Learning
 scikit-learn
-
-# Face Recognition (requires PyTorch)
 torch
 torchvision
 facenet_pytorch
-
-# TensorFlow (CPU version — safer than 2.17.0)
 tensorflow-cpu==2.13.0
-
-# Computer Vision
 opencv-python-headless
+
