@@ -407,31 +407,32 @@ def send_sos2():
     
     return jsonify({"status": "SOS sent with image!"})
 
-@app.route('/get_otp', methods=['GET', 'POST'])
+@app.route('/get_otp', methods=['POST'])
 def get_otp():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        mobile = request.form.get('mobile')
-        email = request.form.get('email')
-        password = request.form.get('password')
+    data = request.get_json()  # Read JSON sent from fetch
+    if not data:
+        return jsonify({'success': False, 'message': 'No data received'})
 
+    username = data.get('username')
+    mobile = data.get('mobile')
+    email = data.get('email')
+    password = data.get('password')
 
-        if not username or not email or not password:
-            flash('All fields are required!')
-            return redirect(url_for('register'))
+    if not username or not email or not password:
+        return jsonify({'success': False, 'message': 'All fields are required!'})
 
-        # Check if email already exists
-        if users_collection.find_one({'email': email}):
-            return jsonify({'success': False, 'message': 'Email already exists! Please log in.'})
+    # Check if email already exists
+    if users_collection.find_one({'email': email}):
+        return jsonify({'success': False, 'message': 'Email already exists! Please log in.'})
 
-        otp_collection.delete_one({"email": email})
+    otp_collection.delete_one({"email": email})
 
-        # Generate and store OTP
-        otp=send_otp(email)
-        if otp is None:
-            return jsonify({'success': False, 'message': 'Failed to send OTP. Please try again.'})
-        else:
-            return jsonify({'success': True, 'message': 'OTP sent to your Email.Please check'})
+    # Generate and store OTP
+    otp = send_otp(email)
+    if otp is None:
+        return jsonify({'success': False, 'message': 'Failed to send OTP. Please try again.'})
+
+    return jsonify({'success': True, 'message': 'OTP sent to your Email. Please check'})
 
 def send_otp(email):
     otp = random.randint(100000, 999999)  # Generate a 6-digit OTP
@@ -840,6 +841,7 @@ def App_review():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
