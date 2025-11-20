@@ -407,6 +407,7 @@ def send_sos2():
     
     return jsonify({"status": "SOS sent with image!"})
 
+
 @app.route('/get_otp', methods=['POST'])
 def get_otp():
     try:
@@ -842,6 +843,7 @@ def App_review():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
 
 
 
